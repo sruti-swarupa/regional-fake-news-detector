@@ -1,0 +1,19 @@
+{
+  "manifest_version": 3,
+  "name": "Satyameva Fake News Detector",
+  "version": "1.0",
+  "description": "Checks regional language articles for fake news patterns.",
+  "permissions": [
+    "activeTab",
+    "contextMenus"
+  ],
+  "host_permissions": [
+  "http://localhost:8000/*"
+  ],
+  "background": {
+    "service_worker": "background.js"
+  },
+  "action": {
+    "default_popup": "popup.html"
+  }
+}

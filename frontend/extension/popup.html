@@ -1,0 +1,161 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <meta charset="utf-8">
+  <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;600;700;800&display=swap" rel="stylesheet">
+  <style>
+    :root {
+      --bg-color: #070913;
+      --card-bg: #0d1127;
+      --primary: #6366f1;
+      --accent: #8b5cf6;
+      --real-color: #10b981;
+      --fake-color: #ef4444;
+      --text-main: #f3f4f6;
+      --text-secondary: #9ca3af;
+      --border: rgba(255, 255, 255, 0.08);
+    }
+
+    body {
+      width: 320px;
+      font-family: 'Plus Jakarta Sans', sans-serif;
+      padding: 18px;
+      background-color: var(--bg-color);
+      color: var(--text-main);
+      margin: 0;
+      box-sizing: border-box;
+    }
+
+    .header {
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      gap: 8px;
+      margin-bottom: 15px;
+    }
+
+    .logo-icon {
+      width: 24px;
+      height: 24px;
+      background: linear-gradient(135deg, var(--primary), var(--accent));
+      border-radius: 6px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+    }
+
+    h3 {
+      margin: 0;
+      font-weight: 800;
+      font-size: 1.15rem;
+      background: linear-gradient(135deg, #6366f1 0%, #a855f7 100%);
+      -webkit-background-clip: text;
+      background-clip: text;
+      -webkit-text-fill-color: transparent;
+      letter-spacing: -0.5px;
+    }
+
+    textarea {
+      width: 100%;
+      height: 95px;
+      background: rgba(255, 255, 255, 0.02);
+      border: 1px solid var(--border);
+      border-radius: 10px;
+      color: white;
+      padding: 10px;
+      box-sizing: border-box;
+      resize: none;
+      outline: none;
+      font-size: 0.9rem;
+      line-height: 1.4;
+      transition: all 0.2s ease;
+    }
+
+    textarea:focus {
+      border-color: var(--accent);
+      background: rgba(255, 255, 255, 0.04);
+    }
+
+    button {
+      width: 100%;
+      padding: 12px;
+      background: linear-gradient(135deg, var(--primary) 0%, var(--accent) 100%);
+      border: none;
+      color: white;
+      font-weight: 700;
+      border-radius: 10px;
+      margin-top: 10px;
+      cursor: pointer;
+      font-size: 0.9rem;
+      transition: all 0.2s ease;
+      box-shadow: 0 4px 10px rgba(99, 102, 241, 0.2);
+    }
+
+    button:hover {
+      transform: translateY(-1px);
+      box-shadow: 0 6px 15px rgba(99, 102, 241, 0.35);
+    }
+
+    button:active {
+      transform: translateY(0);
+    }
+
+    #result {
+      margin-top: 15px;
+      padding: 12px;
+      border-radius: 10px;
+      display: none;
+      text-align: center;
+      font-weight: 700;
+      font-size: 0.95rem;
+      animation: slideUp 0.3s ease;
+    }
+
+    @keyframes slideUp {
+      from { opacity: 0; transform: translateY(5px); }
+      to { opacity: 1; transform: translateY(0); }
+    }
+
+    .real { 
+      background-color: rgba(16, 185, 129, 0.12); 
+      color: var(--real-color); 
+      border: 1px solid rgba(16, 185, 129, 0.25); 
+    }
+
+    .fake { 
+      background-color: rgba(239, 68, 68, 0.12); 
+      color: var(--fake-color); 
+      border: 1px solid rgba(239, 68, 68, 0.25); 
+    }
+
+    .footer {
+      font-size: 0.75rem;
+      color: var(--text-secondary);
+      text-align: center;
+      margin-top: 15px;
+      border-top: 1px solid var(--border);
+      padding-top: 10px;
+    }
+  </style>
+</head>
+<body>
+  <div class="header">
+    <div class="logo-icon">
+      <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3" stroke-linecap="round" stroke-linejoin="round" style="color: white;">
+        <path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"></path>
+      </svg>
+    </div>
+    <h3>Satyameva Detector</h3>
+  </div>
+
+  <textarea id="textInput" placeholder="Paste Odia/Regional news here to check credibility..."></textarea>
+  <button id="checkBtn">Verify Authenticity</button>
+  <div id="result"></div>
+  
+  <div class="footer">
+    Supports Odia & Regional Languages
+  </div>
+
+  <script src="popup.js"></script>
+</body>
+</html>

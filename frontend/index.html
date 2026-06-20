@@ -1,0 +1,955 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Satyameva | Premium Odia & Regional Fake News Detector</title>
+    <meta name="description" content="An advanced NLP-powered platform of Machine Learning baselines to detect fake news in Odia and regional Indian languages.">
+    <!-- Google Fonts -->
+    <link href="https://fonts.googleapis.com/css2?family=Outfit:wght@300;400;500;600;700;800&family=Plus+Jakarta+Sans:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
+    
+    <style>
+        :root {
+            --bg-dark: #070913;
+            --bg-card: rgba(13, 17, 39, 0.45);
+            --bg-card-hover: rgba(20, 26, 56, 0.6);
+            --border-glow: rgba(99, 102, 241, 0.15);
+            --border-hover: rgba(139, 92, 246, 0.35);
+            
+            --primary: #6366f1;
+            --primary-glow: #8b5cf6;
+            --accent-gradient: linear-gradient(135deg, #6366f1 0%, #a855f7 50%, #ec4899 100%);
+            
+            --real-color: #10b981;
+            --real-glow: rgba(16, 185, 129, 0.15);
+            --fake-color: #ef4444;
+            --fake-glow: rgba(239, 68, 68, 0.15);
+            
+            --text-primary: #f3f4f6;
+            --text-secondary: #9ca3af;
+            --text-muted: #6b7280;
+        }
+
+        * {
+            box-sizing: border-box;
+            margin: 0;
+            padding: 0;
+        }
+
+        body {
+            background-color: var(--bg-dark);
+            color: var(--text-primary);
+            font-family: 'Plus Jakarta Sans', 'Outfit', sans-serif;
+            min-height: 100vh;
+            overflow-x: hidden;
+            display: flex;
+            flex-direction: column;
+            background-image: 
+                radial-gradient(circle at 5% 15%, rgba(99, 102, 241, 0.12) 0%, transparent 40%),
+                radial-gradient(circle at 95% 85%, rgba(168, 85, 247, 0.12) 0%, transparent 40%),
+                radial-gradient(circle at 50% 50%, rgba(236, 72, 153, 0.03) 0%, transparent 50%);
+        }
+
+        /* Header Navigation */
+        header {
+            width: 100%;
+            padding: 24px 40px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            border-bottom: 1px solid rgba(255, 255, 255, 0.04);
+            backdrop-filter: blur(12px);
+            z-index: 10;
+        }
+
+        .logo-container {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+        }
+
+        .logo-icon {
+            width: 36px;
+            height: 36px;
+            background: var(--accent-gradient);
+            border-radius: 10px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            box-shadow: 0 4px 15px rgba(99, 102, 241, 0.4);
+        }
+
+        .logo-text {
+            font-size: 1.35rem;
+            font-weight: 800;
+            letter-spacing: -0.5px;
+            background: var(--accent-gradient);
+            -webkit-background-clip: text;
+            background-clip: text;
+            -webkit-text-fill-color: transparent;
+        }
+
+        .status-badge {
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            background: rgba(255, 255, 255, 0.03);
+            border: 1px solid rgba(255, 255, 255, 0.08);
+            border-radius: 30px;
+            padding: 6px 14px;
+            font-size: 0.8rem;
+            font-weight: 600;
+        }
+
+        .status-dot {
+            width: 8px;
+            height: 8px;
+            border-radius: 50%;
+            background-color: var(--text-muted);
+            box-shadow: 0 0 10px var(--text-muted);
+            transition: all 0.3s ease;
+        }
+
+        .status-dot.online {
+            background-color: var(--real-color);
+            box-shadow: 0 0 10px var(--real-color);
+        }
+
+        /* Main Workspace */
+        main {
+            flex: 1;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            padding: 40px 20px;
+            max-width: 1200px;
+            width: 100%;
+            margin: 0 auto;
+        }
+
+        .hero-section {
+            text-align: center;
+            margin-bottom: 40px;
+            max-width: 700px;
+        }
+
+        .hero-tag {
+            display: inline-block;
+            background: rgba(99, 102, 241, 0.1);
+            color: #818cf8;
+            padding: 6px 16px;
+            border-radius: 20px;
+            font-size: 0.85rem;
+            font-weight: 700;
+            letter-spacing: 0.5px;
+            text-transform: uppercase;
+            margin-bottom: 16px;
+            border: 1px solid rgba(99, 102, 241, 0.2);
+        }
+
+        .hero-title {
+            font-size: 2.8rem;
+            font-weight: 800;
+            line-height: 1.2;
+            letter-spacing: -1px;
+            margin-bottom: 12px;
+            color: var(--text-primary);
+        }
+
+        .hero-desc {
+            color: var(--text-secondary);
+            font-size: 1.05rem;
+            line-height: 1.6;
+        }
+
+        /* Interactive Grid Layout */
+        .workspace-grid {
+            display: grid;
+            grid-template-columns: 1.2fr 0.8fr;
+            gap: 30px;
+            width: 100%;
+            margin-bottom: 40px;
+        }
+
+        @media (max-width: 900px) {
+            .workspace-grid {
+                grid-template-columns: 1fr;
+            }
+        }
+
+        .card {
+            background: var(--bg-card);
+            border: 1px solid var(--border-glow);
+            border-radius: 24px;
+            padding: 30px;
+            backdrop-filter: blur(20px);
+            box-shadow: 0 15px 35px rgba(0, 0, 0, 0.4);
+            transition: all 0.3s ease;
+        }
+
+        .card:hover {
+            border-color: rgba(99, 102, 241, 0.25);
+        }
+
+        .input-card {
+            display: flex;
+            flex-direction: column;
+            gap: 20px;
+        }
+
+        .input-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        .card-title {
+            font-size: 1.25rem;
+            font-weight: 700;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+
+        .word-counter {
+            font-size: 0.8rem;
+            color: var(--text-secondary);
+            font-weight: 500;
+        }
+
+        textarea {
+            width: 100%;
+            height: 220px;
+            background: rgba(0, 0, 0, 0.2);
+            border: 1px solid rgba(255, 255, 255, 0.06);
+            border-radius: 18px;
+            padding: 20px;
+            color: var(--text-primary);
+            font-size: 1.05rem;
+            line-height: 1.6;
+            resize: none;
+            outline: none;
+            transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+        }
+
+        textarea:focus {
+            border-color: var(--border-hover);
+            box-shadow: 0 0 20px rgba(139, 92, 246, 0.12);
+            background: rgba(0, 0, 0, 0.35);
+        }
+
+        .controls-row {
+            display: flex;
+            gap: 15px;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        .button-group {
+            display: flex;
+            gap: 10px;
+        }
+
+        .secondary-btn {
+            background: rgba(255, 255, 255, 0.03);
+            border: 1px solid rgba(255, 255, 255, 0.08);
+            border-radius: 14px;
+            color: var(--text-primary);
+            padding: 12px 20px;
+            font-size: 0.95rem;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.2s ease;
+        }
+
+        .secondary-btn:hover {
+            background: rgba(255, 255, 255, 0.08);
+            border-color: rgba(255, 255, 255, 0.15);
+        }
+
+        .primary-btn {
+            background: var(--accent-gradient);
+            border: none;
+            border-radius: 14px;
+            color: white;
+            padding: 12px 30px;
+            font-size: 0.95rem;
+            font-weight: 700;
+            cursor: pointer;
+            transition: all 0.3s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+            box-shadow: 0 4px 15px rgba(99, 102, 241, 0.3);
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+
+        .primary-btn:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 8px 25px rgba(99, 102, 241, 0.5);
+        }
+
+        .primary-btn:active {
+            transform: translateY(0);
+        }
+
+        /* Result Dashboard */
+        .result-card {
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            position: relative;
+            min-height: 360px;
+        }
+
+        .result-placeholder {
+            text-align: center;
+            color: var(--text-secondary);
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            gap: 16px;
+        }
+
+        .placeholder-icon {
+            width: 64px;
+            height: 64px;
+            border-radius: 50%;
+            background: rgba(255, 255, 255, 0.02);
+            border: 1px dashed rgba(255, 255, 255, 0.1);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: var(--text-muted);
+        }
+
+        .result-display {
+            display: none;
+            opacity: 0;
+            transform: scale(0.95);
+            transition: all 0.5s cubic-bezier(0.16, 1, 0.3, 1);
+        }
+
+        .result-display.active {
+            display: flex;
+            flex-direction: column;
+            gap: 25px;
+            opacity: 1;
+            transform: scale(1);
+        }
+
+        .badge-container {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+        }
+
+        .verdict-badge {
+            font-size: 1.1rem;
+            font-weight: 800;
+            padding: 8px 20px;
+            border-radius: 30px;
+            letter-spacing: 1px;
+            text-transform: uppercase;
+        }
+
+        .verdict-real {
+            background-color: rgba(16, 185, 129, 0.12);
+            color: var(--real-color);
+            border: 1px solid rgba(16, 185, 129, 0.25);
+            box-shadow: 0 0 15px rgba(16, 185, 129, 0.1);
+        }
+
+        .verdict-fake {
+            background-color: rgba(239, 68, 68, 0.12);
+            color: var(--fake-color);
+            border: 1px solid rgba(239, 68, 68, 0.25);
+            box-shadow: 0 0 15px rgba(239, 68, 68, 0.1);
+        }
+
+        /* Circular Meter */
+        .meter-container {
+            display: flex;
+            align-items: center;
+            gap: 20px;
+        }
+
+        .circular-gauge {
+            position: relative;
+            width: 80px;
+            height: 80px;
+        }
+
+        .circular-gauge svg {
+            width: 100%;
+            height: 100%;
+            transform: rotate(-90deg);
+        }
+
+        .circular-gauge circle {
+            fill: none;
+            stroke-width: 6;
+        }
+
+        .circular-gauge .bg-circle {
+            stroke: rgba(255, 255, 255, 0.05);
+        }
+
+        .circular-gauge .fill-circle {
+            stroke: var(--primary);
+            stroke-linecap: round;
+            stroke-dasharray: 226;
+            stroke-dashoffset: 226;
+            transition: stroke-dashoffset 1.2s cubic-bezier(0.16, 1, 0.3, 1);
+        }
+
+        .percentage-label {
+            position: absolute;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+            font-size: 1.15rem;
+            font-weight: 700;
+        }
+
+        .meter-info {
+            display: flex;
+            flex-direction: column;
+            gap: 4px;
+        }
+
+        .meter-title {
+            font-size: 0.9rem;
+            font-weight: 600;
+            color: var(--text-secondary);
+        }
+
+        .meter-desc {
+            font-size: 0.8rem;
+            color: var(--text-muted);
+        }
+
+        /* Analysis breakdown list */
+        .analysis-list {
+            display: flex;
+            flex-direction: column;
+            gap: 12px;
+            background: rgba(0, 0, 0, 0.15);
+            border-radius: 16px;
+            padding: 18px;
+            border: 1px solid rgba(255, 255, 255, 0.03);
+        }
+
+        .analysis-item {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            font-size: 0.88rem;
+        }
+
+        .analysis-label {
+            color: var(--text-secondary);
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+
+        .analysis-value {
+            font-weight: 600;
+        }
+
+        .badge-sm {
+            padding: 2px 8px;
+            border-radius: 4px;
+            font-size: 0.75rem;
+            font-weight: 700;
+        }
+
+        /* Clickbait warnings box */
+        .warning-box {
+            background: rgba(239, 68, 68, 0.08);
+            border: 1px solid rgba(239, 68, 68, 0.18);
+            border-radius: 14px;
+            padding: 14px 18px;
+            display: none;
+            align-items: flex-start;
+            gap: 12px;
+            font-size: 0.85rem;
+            line-height: 1.5;
+            color: rgba(252, 165, 165, 0.9);
+        }
+
+        .warning-box.active {
+            display: flex;
+        }
+
+        /* Spinner & Loading */
+        .loader-container {
+            display: none;
+            position: absolute;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+            flex-direction: column;
+            align-items: center;
+            gap: 16px;
+            z-index: 5;
+        }
+
+        .glow-spinner {
+            width: 48px;
+            height: 48px;
+            border: 3px solid rgba(99, 102, 241, 0.08);
+            border-top: 3px solid var(--primary-glow);
+            border-radius: 50%;
+            animation: spin 0.8s linear infinite;
+            box-shadow: 0 0 15px rgba(139, 92, 246, 0.15);
+        }
+
+        @keyframes spin {
+            0% { transform: rotate(0deg); }
+            100% { transform: rotate(360deg); }
+        }
+
+        /* History log */
+        .history-section {
+            width: 100%;
+            margin-top: 20px;
+        }
+
+        .history-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 15px;
+        }
+
+        .history-title {
+            font-size: 1.1rem;
+            font-weight: 700;
+            color: var(--text-secondary);
+        }
+
+        .history-list {
+            display: flex;
+            flex-direction: column;
+            gap: 10px;
+        }
+
+        .history-item {
+            background: rgba(255, 255, 255, 0.02);
+            border: 1px solid rgba(255, 255, 255, 0.04);
+            border-radius: 12px;
+            padding: 14px 20px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            font-size: 0.9rem;
+            cursor: pointer;
+            transition: all 0.2s ease;
+        }
+
+        .history-item:hover {
+            background: rgba(255, 255, 255, 0.04);
+            border-color: rgba(99, 102, 241, 0.15);
+        }
+
+        .history-text {
+            white-space: nowrap;
+            overflow: hidden;
+            text-overflow: ellipsis;
+            max-width: 60%;
+            color: var(--text-primary);
+        }
+
+        .history-meta {
+            display: flex;
+            gap: 15px;
+            align-items: center;
+        }
+
+        .history-badge {
+            font-size: 0.75rem;
+            font-weight: 700;
+            padding: 2px 8px;
+            border-radius: 4px;
+            text-transform: uppercase;
+        }
+
+        .history-badge.real {
+            background: rgba(16, 185, 129, 0.15);
+            color: var(--real-color);
+        }
+
+        .history-badge.fake {
+            background: rgba(239, 68, 68, 0.15);
+            color: var(--fake-color);
+        }
+
+        .clear-history-btn {
+            font-size: 0.8rem;
+            color: var(--text-muted);
+            background: none;
+            border: none;
+            cursor: pointer;
+            font-weight: 600;
+        }
+
+        .clear-history-btn:hover {
+            color: var(--fake-color);
+        }
+    </style>
+</head>
+<body>
+
+    <!-- Header Section -->
+    <header>
+        <div class="logo-container">
+            <div class="logo-icon">
+                <!-- SVG Shield Check icon -->
+                <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round" style="color: white;">
+                    <path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"></path>
+                    <path d="m9 11 2 2 4-4"></path>
+                </svg>
+            </div>
+            <span class="logo-text">SATYAMEVA</span>
+        </div>
+        
+        <div class="status-badge" id="apiStatusBadge">
+            <div class="status-dot" id="apiStatusDot"></div>
+            <span id="apiStatusText">Checking Server...</span>
+        </div>
+    </header>
+
+    <!-- Main Content Grid -->
+    <main>
+        
+        <!-- Hero Introduction -->
+        <section class="hero-section">
+            <span class="hero-tag">NLP & Text Analytics Baseline</span>
+            <h1 class="hero-title">Regional Languages Fake News Detector</h1>
+            <p class="hero-desc">Identify misinformation, Clickbait patterns, and fabricated news templates in regional languages (Odia and others) using data-driven NLP models.</p>
+        </section>
+
+        <!-- Dynamic Grid Workspace -->
+        <div class="workspace-grid">
+            
+            <!-- Left Panel: Input Area -->
+            <div class="card input-card">
+                <div class="input-header">
+                    <span class="card-title">
+                        <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" style="color: var(--primary);">
+                            <path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"></path>
+                            <polyline points="14 2 14 8 20 8"></polyline>
+                            <line x1="16" y1="13" x2="8" y2="13"></line>
+                            <line x1="16" y1="17" x2="8" y2="17"></line>
+                            <polyline points="10 9 9 9 8 9"></polyline>
+                        </svg>
+                        Input News Content
+                    </span>
+                    <span class="word-counter" id="charCounter">0 characters</span>
+                </div>
+                
+                <textarea id="newsInput" oninput="updateCharCounter()" placeholder="ପେଷ୍ଟ କରନ୍ତୁ - Paste the news article or headline here in Odia (e.g. 'ବଡ ଖୁଲାସା...')..."></textarea>
+                
+                <div class="controls-row">
+                    <div class="button-group">
+                        <button class="secondary-btn" onclick="clearInput()">Clear</button>
+                        <button class="secondary-btn" onclick="pasteSample()">Load Odia Sample</button>
+                    </div>
+                    <button class="primary-btn" id="analyzeBtn" onclick="analyzeNews()">
+                        <span>Verify Credibility</span>
+                        <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round">
+                            <polyline points="9 18 15 12 9 6"></polyline>
+                        </svg>
+                    </button>
+                </div>
+            </div>
+
+            <!-- Right Panel: Results Dashboard -->
+            <div class="card result-card" id="resultCard">
+                
+                <!-- Loading State overlay -->
+                <div class="loader-container" id="loaderContainer">
+                    <div class="glow-spinner"></div>
+                    <p style="color: var(--text-secondary); font-size: 0.9rem; font-weight: 500;">Running NLP Classifiers...</p>
+                </div>
+
+                <!-- 1. Placeholder State -->
+                <div class="result-placeholder" id="resultPlaceholder">
+                    <div class="placeholder-icon">
+                        <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                            <circle cx="12" cy="12" r="10"></circle>
+                            <line x1="12" y1="8" x2="12" y2="12"></line>
+                            <line x1="12" y1="16" x2="12.01" y2="16"></line>
+                        </svg>
+                    </div>
+                    <div>
+                        <h4 style="font-weight: 700; margin-bottom: 6px;">Awaiting Verification</h4>
+                        <p style="font-size: 0.88rem; color: var(--text-muted);">Enter regional news text on the left and trigger analysis to review predictions.</p>
+                    </div>
+                </div>
+
+                <!-- 2. Active Result Display State -->
+                <div class="result-display" id="resultDisplay">
+                    <div class="badge-container">
+                        <h4 style="font-weight: 700; font-size: 1.05rem;">Classification Verdict</h4>
+                        <div id="verdictBadge" class="verdict-badge verdict-real">REAL</div>
+                    </div>
+
+                    <!-- Circular Gauge Indicator -->
+                    <div class="meter-container">
+                        <div class="circular-gauge">
+                            <svg>
+                                <circle class="bg-circle" cx="40" cy="40" r="36"></circle>
+                                <circle class="fill-circle" id="gaugeFill" cx="40" cy="40" r="36"></circle>
+                            </svg>
+                            <div class="percentage-label" id="confidencePercent">0%</div>
+                        </div>
+                        <div class="meter-info">
+                            <div class="meter-title">Confidence Metric</div>
+                            <div class="meter-desc" id="confidenceDesc">Probability allocated by NLP classifier.</div>
+                        </div>
+                    </div>
+
+                    <!-- Analysis breakdown metrics -->
+                    <div class="analysis-list">
+                        <div class="analysis-item">
+                            <span class="analysis-label">Model Classification:</span>
+                            <span class="analysis-value badge-sm" id="metaModelUsed" style="background: rgba(99, 102, 241, 0.15); color: #818cf8;">TF-IDF Baseline</span>
+                        </div>
+                        <div class="analysis-item">
+                            <span class="analysis-label">Text Character Length:</span>
+                            <span class="analysis-value" id="metaTextLen">0</span>
+                        </div>
+                        <div class="analysis-item">
+                            <span class="analysis-label">Status Verification:</span>
+                            <span class="analysis-value" style="color: var(--real-color);">Completed</span>
+                        </div>
+                    </div>
+
+                    <!-- Warning for clickbait template matches -->
+                    <div class="warning-box" id="warningBox">
+                        <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="#fca5a5" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" style="flex-shrink: 0;">
+                            <path d="m21.73 18-8-14a2 2 0 0 0-3.48 0l-8 14A2 2 0 0 0 4 21h16a2 2 0 0 0 1.73-3Z"></path>
+                            <line x1="12" y1="9" x2="12" y2="13"></line>
+                            <line x1="12" y1="17" x2="12.01" y2="17"></line>
+                        </svg>
+                        <div>
+                            <strong style="display: block; margin-bottom: 2px;">Sensational Clickbait Detected</strong>
+                            <span id="warningMsg">Your text contains known clickbait templates commonly found in fabricated Odia news reporting.</span>
+                        </div>
+                    </div>
+                </div>
+
+            </div>
+        </div>
+
+        <!-- Section: Scan History -->
+        <section class="history-section" id="historySection" style="display: none;">
+            <div class="history-header">
+                <span class="history-title">Recent Verification History</span>
+                <button class="clear-history-btn" onclick="clearHistory()">Clear History</button>
+            </div>
+            <div class="history-list" id="historyList">
+                <!-- Javascript populates this -->
+            </div>
+        </section>
+
+    </main>
+
+    <!-- Javascript Logical Controller -->
+    <script>
+        const API_URL = "http://localhost:8000/predict";
+        let historyArray = JSON.parse(localStorage.getItem("satyameva_history") || "[]");
+
+        // On document start: Check server status and render history log
+        window.addEventListener("DOMContentLoaded", () => {
+            checkServerStatus();
+            renderHistory();
+        });
+
+        // Periodic Health Check for API Status (every 10 seconds)
+        async function checkServerStatus() {
+            const dot = document.getElementById("apiStatusDot");
+            const text = document.getElementById("apiStatusText");
+            try {
+                const response = await fetch("http://localhost:8000/health", { method: "GET" });
+                if (response.ok) {
+                    const data = await response.json();
+                    dot.className = "status-dot online";
+                    text.innerText = `Online (${data.model_type.toUpperCase()})`;
+                } else {
+                    throw new Error("Offline");
+                }
+            } catch (e) {
+                dot.className = "status-dot";
+                text.innerText = "Local Server Offline";
+            }
+        }
+        setInterval(checkServerStatus, 10000);
+
+        function updateCharCounter() {
+            const text = document.getElementById("newsInput").value;
+            document.getElementById("charCounter").innerText = `${text.length} characters`;
+        }
+
+        function clearInput() {
+            document.getElementById("newsInput").value = "";
+            updateCharCounter();
+        }
+
+        function pasteSample() {
+            // A clickbait sample Odia text commonly used for testing template filtering
+            document.getElementById("newsInput").value = "ବଡ ଖୁଲାସା: ଆଶ୍ଚର୍ଯ୍ୟଜନକ ଘଟଣା ସୋସିଆଲ ମିଡିଆରେ ଭାଇରାଲ ହୋଇଛି, ତୁରନ୍ତ ଏହି ଲିଙ୍କ କ୍ଲିକ କରି ସମ୍ପୂର୍ଣ୍ଣ ଖବର ପଢନ୍ତୁ।";
+            updateCharCounter();
+        }
+
+        async function analyzeNews() {
+            const text = document.getElementById("newsInput").value.trim();
+            const placeholder = document.getElementById("resultPlaceholder");
+            const display = document.getElementById("resultDisplay");
+            const loader = document.getElementById("loaderContainer");
+            const analyzeBtn = document.getElementById("analyzeBtn");
+
+            if (!text) {
+                alert("Please input some Odia news content to verify.");
+                return;
+            }
+
+            // Enter Loading State
+            analyzeBtn.disabled = true;
+            placeholder.style.display = "none";
+            display.style.display = "none";
+            display.classList.remove("active");
+            loader.style.display = "flex";
+
+            // Local Clickbait Heuristic Check
+            const clickbaitPatterns = [
+                "ବଡ ଖୁଲାସା", "ବଡ଼ ଖୁଲାସା", "ଭୟଙ୍କର", "ଚମତ୍କାର", "ଆଶ୍ଚର୍ୟଜନକ", 
+                "ଆଶ୍ଚର୍ଯ୍ୟଜନକ", "100% ସତ୍ୟ", "ତୁରନ୍ତ ଶେୟର", "ଲିଙ୍କ କ୍ଲିକ୍"
+            ];
+            const foundPatterns = clickbaitPatterns.filter(pattern => text.includes(pattern));
+
+            try {
+                const response = await fetch(API_URL, {
+                    method: "POST",
+                    headers: { "Content-Type": "application/json" },
+                    body: JSON.stringify({ text: text })
+                });
+
+                if (!response.ok) {
+                    throw new Error("HTTP failure");
+                }
+
+                const data = await response.json();
+                
+                // Show Verdict Badge
+                const badge = document.getElementById("verdictBadge");
+                badge.innerText = data.prediction;
+                if (data.prediction.toLowerCase() === "real") {
+                    badge.className = "verdict-badge verdict-real";
+                } else {
+                    badge.className = "verdict-badge verdict-fake";
+                }
+
+                // Update Confidence Gauge
+                const pct = Math.round(data.confidence * 100);
+                document.getElementById("confidencePercent").innerText = `${pct}%`;
+                
+                // Animate SVG Gauge Fill (Circumference of r=36 is 226)
+                const offset = 226 - (226 * pct) / 100;
+                document.getElementById("gaugeFill").style.strokeDashoffset = offset;
+                
+                // Set color theme for gauge stroke
+                if (data.prediction.toLowerCase() === "real") {
+                    document.getElementById("gaugeFill").style.stroke = "var(--real-color)";
+                } else {
+                    document.getElementById("gaugeFill").style.stroke = "var(--fake-color)";
+                }
+
+                // Metadata mappings
+                document.getElementById("metaModelUsed").innerText = data.model_used;
+                document.getElementById("metaTextLen").innerText = text.length;
+
+                // Configure Clickbait Warning panel
+                const warningBox = document.getElementById("warningBox");
+                if (foundPatterns.length > 0) {
+                    warningBox.classList.add("active");
+                    document.getElementById("warningMsg").innerText = `Contains flag phrase(s): "${foundPatterns.join('", "')}". Clickbait patterns often point to fabricated news.`;
+                } else {
+                    warningBox.classList.remove("active");
+                }
+
+                // Save to Scan History
+                saveToHistory(text, data.prediction, pct);
+
+                // Exit loading, show results
+                loader.style.display = "none";
+                display.style.display = "flex";
+                setTimeout(() => display.classList.add("active"), 50);
+
+            } catch (err) {
+                alert("Error connecting to your local python server. Please verify you ran: 'uvicorn app:app --reload'");
+                loader.style.display = "none";
+                placeholder.style.display = "flex";
+            } finally {
+                analyzeBtn.disabled = false;
+            }
+        }
+
+        // History Manager Functions
+        function saveToHistory(text, verdict, confidence) {
+            const newItem = {
+                text: text,
+                verdict: verdict,
+                confidence: confidence,
+                timestamp: new Date().toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' })
+            };
+            // Limit to top 5 history records
+            historyArray.unshift(newItem);
+            if (historyArray.length > 5) historyArray.pop();
+            
+            localStorage.setItem("satyameva_history", JSON.stringify(historyArray));
+            renderHistory();
+        }
+
+        function renderHistory() {
+            const container = document.getElementById("historySection");
+            const list = document.getElementById("historyList");
+            
+            if (historyArray.length === 0) {
+                container.style.display = "none";
+                return;
+            }
+
+            container.style.display = "block";
+            list.innerHTML = "";
+
+            historyArray.forEach((item, index) => {
+                const div = document.createElement("div");
+                div.className = "history-item";
+                div.onclick = () => {
+                    document.getElementById("newsInput").value = item.text;
+                    updateCharCounter();
+                };
+                
+                div.innerHTML = `
+                    <span class="history-text">"${item.text}"</span>
+                    <div class="history-meta">
+                        <span style="font-size: 0.75rem; color: var(--text-muted);">${item.timestamp}</span>
+                        <span class="history-badge ${item.verdict.toLowerCase()}">${item.verdict} (${item.confidence}%)</span>
+                    </div>
+                `;
+                list.appendChild(div);
+            });
+        }
+
+        function clearHistory() {
+            historyArray = [];
+            localStorage.removeItem("satyameva_history");
+            renderHistory();
+        }
+    </script>
+</body>
+</html>
