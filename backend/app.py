@@ -193,9 +193,15 @@ def health():
         "tfidf_loaded": tfidf_model is not None
     }
 
-import os
-import uvicorn
+from fastapi import FastAPI
 
-if __name__ == "__main__":
-    port = int(os.environ.get("PORT", 8000))
-    uvicorn.run(app, host="0.0.0.0", port=port)
+app = FastAPI()
+
+@app.get("/")
+def read_root():
+    return {"message": "Backend is running!"}
+
+@app.post("/analyze")
+def analyze_text(text: str):
+    # Replace with your ML model logic
+    return {"prediction": "FAKE", "confidence": 0.78}
