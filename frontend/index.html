@@ -763,6 +763,11 @@
     <script>
         const API_URL = "https://sruti2006-satyameva-backend.hf.space/predict";
         let historyArray = JSON.parse(localStorage.getItem("satyameva_history") || "[]");
+let sampleIndex = 0;
+const loadSamples = [
+    "ସତ୍ୟ ଖବର: ଓଡ଼ିଶାରେ ବୃହତ୍ ବାର୍ଷିକ ବର୍ଷା ପାଣି ପରିସ୍ଥିତି ନିମନ୍ତେ କୃଷକମାନେ ରାଜ୍ୟ ସରକାରରୁ ସହାୟତା ନିଆ ହେଲା।",
+    "ନକଲି ବାର୍ତ୍ତା: ରାଜ୍ୟ ପ୍ରଧାନ ମନ୍ତ୍ରୀ ଅଜାଣା ବିଦେଶୀ ଉପକରଣ ବ୍ୟବହାର କରି ବିଡିଓ ରାତିରେ ଜିବନ ଦାନ ଦେବା ଦାବି କରିଛନ୍ତି।"
+];
 
         // On document start: Check server status and render history log
         window.addEventListener("DOMContentLoaded", () => {
@@ -801,9 +806,9 @@
         }
 
         function pasteSample() {
-            // A clickbait sample Odia text commonly used for testing template filtering
-            document.getElementById("newsInput").value = "ବଡ ଖୁଲାସା: ନୂତନ ମନ୍ତ୍ରୀ ସଂସଦରେ ଦାୟିତ୍ବ ନେଇ ଭାରୀ ଆଲୋଚନା ପ୍ରଚଳିତ ହେଲା। ଭାରତର ପୂର୍ବ ଅଞ୍ଚଳରେ ବୃହତ୍ ପାଣି ଲିଗାଡ଼ିର ଲାଗଣା ଘଟଣା ହେଲା ଏବଂ ବହୁ ପ୍ରାଣହାନି ହୋଇଛି।",
-  
+            // Cycle through predefined sample news items
+            document.getElementById("newsInput").value = loadSamples[sampleIndex];
+            sampleIndex = (sampleIndex + 1) % loadSamples.length;
             updateCharCounter();
         }
 
