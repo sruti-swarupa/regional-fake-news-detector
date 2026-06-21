@@ -60,6 +60,7 @@
             align-items: center;
             border-bottom: 1px solid rgba(255, 255, 255, 0.04);
             backdrop-filter: blur(12px);
+            -webkit-backdrop-filter: blur(12px);
             z-index: 10;
         }
 
@@ -185,6 +186,7 @@
             border-radius: 24px;
             padding: 30px;
             backdrop-filter: blur(20px);
+            -webkit-backdrop-filter: blur(20px);
             box-shadow: 0 15px 35px rgba(0, 0, 0, 0.4);
             transition: all 0.3s ease;
         }
@@ -797,10 +799,12 @@ let sampleIndex = 0; // index for cycling samples
             try {
                                 // Health check: request the /health endpoint to know if the model is ready
             const healthUrl = `${BASE_URL}/health`;
+            console.log('Health check URL:', healthUrl);
             const response = await fetch(healthUrl, { method: 'GET' });
             console.log('Health check response', response.status, response.headers.get('content-type'));
             const contentType = response.headers.get('content-type') || '';
-            if (response.ok && contentType.includes('application/json')) {
+            // Treat 200‑OK or 206‑Partial with JSON as valid, otherwise assume the container is still warming up
+            if ((response.ok && (response.status === 200 || response.status === 206) && contentType.includes('application/json')) {
                 const payload = await response.json();
                 // If model is loaded, consider it online
                 if (payload.model_type && (payload.mbert_loaded || payload.tfidf_loaded)) {
@@ -810,7 +814,8 @@ let sampleIndex = 0; // index for cycling samples
                     dot.className = 'status-dot';
                     text.innerText = 'Waking up… (please wait)';
                 }
-            } else if (response.status === 404) {
+            } else if (response.status === 404 || response.status === 206) {
+                // 404 or 206 likely means the HF space is still initializing
                 dot.className = 'status-dot';
                 text.innerText = 'Waking up… (please wait)';
             } else {
