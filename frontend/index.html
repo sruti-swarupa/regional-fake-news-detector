@@ -783,19 +783,28 @@ let sampleIndex = 0; // index for cycling samples
             const dot = document.getElementById("apiStatusDot");
             const text = document.getElementById("apiStatusText");
             try {
-                const response = await fetch(API_URL, {
-                    method: "POST",
-                    headers: { "Content-Type": "application/json" },
-                    body: JSON.stringify({ text: "test" })
-                });
-                const contentType = response.headers.get("content-type") || "";
-                if (response.ok && contentType.includes("application/json")) {
-                    dot.className = "status-dot online";
+                                // Health check: request the /health endpoint to know if the model is ready
+            const healthUrl = API_URL.replace('/run/predict', '/health');
+            const response = await fetch(healthUrl, { method: 'GET' });
+            console.log('Health check response', response.status, response.headers.get('content-type'));
+            const contentType = response.headers.get('content-type') || '';
+            if (response.ok && contentType.includes('application/json')) {
+                const payload = await response.json();
+                // If model is loaded, consider it online
+                if (payload.model_type && (payload.mbert_loaded || payload.tfidf_loaded)) {
+                    dot.className = 'status-dot online';
                     text.innerText = `Online (Model)`;
                 } else {
-                    dot.className = "status-dot";
-                    text.innerText = "Waking up… (please wait)";
+                    dot.className = 'status-dot';
+                    text.innerText = 'Waking up… (please wait)';
                 }
+            } else if (response.status === 404) {
+                dot.className = 'status-dot';
+                text.innerText = 'Waking up… (please wait)';
+            } else {
+                dot.className = 'status-dot';
+                text.innerText = 'Local Server Offline';
+            }
             } catch (e) {
                 dot.className = "status-dot";
                 text.innerText = "Local Server Offline";
