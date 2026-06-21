@@ -761,7 +761,8 @@
 
     <!-- Javascript Logical Controller -->
     <script>
-        const API_URL = "https://sruti2006-satyameva-backend.hf.space/run/predict";
+        const BASE_URL = "https://sruti2006-satyameva-backend.hf.space";
+        const API_URL = `${BASE_URL}/predict`;
                 let historyArray = JSON.parse(localStorage.getItem("satyameva_history") || "[]");
         const loadSamples = [
             "ମୁଖ୍ୟମନ୍ତ୍ରୀ ନୂତନ ଯୋଜନା ଘୋଷଣା କରିଛନ୍ତି",
@@ -784,7 +785,7 @@ let sampleIndex = 0; // index for cycling samples
             const text = document.getElementById("apiStatusText");
             try {
                                 // Health check: request the /health endpoint to know if the model is ready
-            const healthUrl = API_URL.replace('/run/predict', '/health');
+            const healthUrl = `${BASE_URL}/health`;
             const response = await fetch(healthUrl, { method: 'GET' });
             console.log('Health check response', response.status, response.headers.get('content-type'));
             const contentType = response.headers.get('content-type') || '';
@@ -860,20 +861,19 @@ let sampleIndex = 0; // index for cycling samples
                 const response = await fetch(API_URL, {
                     method: "POST",
                     headers: { "Content-Type": "application/json" },
-                    // Include required fields for Gradio API
-                    body: JSON.stringify({ data: [text], fn_index: 0, session_hash: "static_hash_123" })
+                    // FastAPI expects a JSON object with a 'text' field
+                    body: JSON.stringify({ text })
                 });
 
                 if (!response.ok) {
-                    throw new Error("HTTP failure");
+                    throw new Error(`HTTP ${response.status}`);
                 }
 
                 const result = await response.json();
-                // Gradio typically returns { data: [[prediction, confidence, model_used]] }
-                const payload = result?.data?.[0] || [];
-                const prediction = payload[0] || "unknown";
-                const confidence = payload[1] || 0;
-                const model_used = payload[2] || "model";
+                // FastAPI returns fields directly
+                const prediction = result.prediction || "unknown";
+                const confidence = result.confidence || 0;
+                const model_used = result.model_used || "model";
 
                 // Show Verdict Badge
                 const badge = document.getElementById("verdictBadge");
