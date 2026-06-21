@@ -804,7 +804,7 @@ let sampleIndex = 0; // index for cycling samples
             console.log('Health check response', response.status, response.headers.get('content-type'));
             const contentType = response.headers.get('content-type') || '';
             // Treat 200‑OK or 206‑Partial with JSON as valid, otherwise assume the container is still warming up
-            if ((response.ok && (response.status === 200 || response.status === 206) && contentType.includes('application/json')) {
+            if (response.ok && (response.status === 200 || response.status === 206) && contentType.includes('application/json')) {
                 const payload = await response.json();
                 // If model is loaded, consider it online
                 if (payload.model_type && (payload.mbert_loaded || payload.tfidf_loaded)) {
