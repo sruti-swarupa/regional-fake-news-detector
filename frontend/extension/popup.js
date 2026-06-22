@@ -12,7 +12,7 @@ document.getElementById("checkBtn").addEventListener("click", async () => {
   resultDiv.className = "";
   
   try {
-    const response = await fetch("https://sruti2006-satyameva-backend.hf.space/predict", {
+    const response = await fetch("https://sruti2006-fake-news-detector-api.hf.space/predict", {
       method: "POST",
       headers: { "Content-Type": "application/json" },
       body: JSON.stringify({ text })

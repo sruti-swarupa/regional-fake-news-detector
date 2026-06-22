@@ -11,7 +11,7 @@ chrome.contextMenus.onClicked.addListener((info, tab) => {
   if (info.menuItemId === "checkFakeNews" && info.selectionText) {
     console.log("Selected text to check:", info.selectionText);
     
-    fetch("https://sruti2006-satyameva-backend.hf.space/predict", {
+    fetch("https://sruti2006-fake-news-detector-api.hf.space/predict", {
       method: "POST",
       headers: { "Content-Type": "application/json" },
       body: JSON.stringify({ text: info.selectionText })
